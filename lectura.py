@@ -5,6 +5,8 @@ import requests
 import tkinter as tk
 from tkinter import simpledialog
 
+####ARCHIVO PARA SCRAPEAR DATOS DEL PC####
+
 hostname = subprocess.check_output("hostname", shell=True, text=True).strip()
 ruta_archivo = os.path.join(os.getcwd(), f"{hostname}_resultado_checkeo.txt")
 
@@ -29,24 +31,28 @@ def pedirPassword():
 checkPassword = pedirPassword()
 with open(ruta_archivo,"a",encoding="utf-8") as f:
     f.write("\n === CONTRASEÑA DEL EQUIPO === \n\n"+checkPassword+"\n")
+import subprocess
+
 def checkIP():
+    value = None
     try:
-        check_ip = subprocess.check_output("ipconfig",shell=True,text=True)
+        check_ip = subprocess.check_output("ipconfig", shell=True, text=True)
         salida = check_ip.splitlines()
         for linea in salida:
             if "IPv4" in linea:
-                print("linea encontrada "+linea)
+                print("linea encontrada " + linea)
                 value = linea.strip().split()[-1]
-                if value:
-                    print("Dirección IPv4: "+value)
-                    with open(ruta_archivo, "a", encoding="utf-8") as f:
-                        f.write("\n===== DIRECCION IP =====\n\n"+value+"\n")
-                else:
-                    with open(ruta_archivo, "a", encoding="utf-8") as f:
-                        f.write("\n===== DIRECCION IP NO ENCONTRADA =====")
+                print("Dirección IPv4: " + value)
+                with open(ruta_archivo, "a", encoding="utf-8") as f:
+                    f.write("\n===== DIRECCION IP =====\n\n" + value + "\n")
+                break
+        if not value:
+            with open(ruta_archivo, "a", encoding="utf-8") as f:
+                f.write("\n===== DIRECCION IP NO ENCONTRADA =====")
     except subprocess.CalledProcessError as e:
-        print("error en la ejecucion del comando CMD")
+        print("Error en la ejecución del comando CMD")
         print(e)
+    return value
 def checkProfile():
     check_user = getpass.getuser()
     with open(ruta_archivo,"a",encoding="utf-8") as f:
@@ -70,7 +76,8 @@ def checkAdmin():
         print("Ha ocurrido un error")
 def checkRDP():
     try:
-        check_remote = subprocess.check_output('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections', shell=True,text=True)
+        check_remote = subprocess.check_output('reg query "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" /v fDenyTSConnections'
+, shell=True,text=True)
         salida = check_remote.splitlines()
         for e in salida:
             if "fDenyTSConnections" in e:
@@ -225,12 +232,27 @@ def checkTipoEquipo():
         print("Error detectando el tipo de equipo:", e)
 
 ###for que ejecuta cada funcion previa y evita que el script se detenga si falla una
-for func in [checkIP, checkHost, checkMac, checkSerial, checkAdmin, checkRDP, checkFirewall, checkProfile,
-             checkYTB, checkTipoEquipo,lambda: check_app_instalada("Topia.exe")]:
+#def runScript():
+#    for func in [checkIP, checkHost, checkMac, checkSerial, checkAdmin, checkRDP, checkProfile,
+#                 checkYTB, checkTipoEquipo, lambda: check_app_instalada("Topia.exe")]:
+#        try:
+#            func()
+#        except Exception as e:
+#            nombre = getattr(func, '__name__', 'función anónima o lambda')
+#            print(f"Error ejecutando {nombre}: {e}")
+
+def checkIPExcel():
     try:
-        func()
-    except Exception as e:
-        print(f"Error ejecutando {func.__name__}: {e}")
+        check_ip = subprocess.check_output("ipconfig", shell=True, text=True)
+        salida = check_ip.splitlines()
+        for linea in salida:
+            if "IPv4" in linea:
+                value = linea.strip().split()[-1]
+                return value.strip()
+    except subprocess.CalledProcessError as e:
+        print("Error en ipconfig:", e)
+        return None
+
 
 
 
