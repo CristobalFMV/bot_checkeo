@@ -231,7 +231,7 @@ def checkTipoEquipo():
     except Exception as e:
         print("Error detectando el tipo de equipo:", e)
 
-###for que ejecuta cada funcion previa y evita que el script se detenga si falla una
+#for que ejecuta cada funcion previa y evita que el script se detenga si falla una
 #def runScript():
 #    for func in [checkIP, checkHost, checkMac, checkSerial, checkAdmin, checkRDP, checkProfile,
 #                 checkYTB, checkTipoEquipo, lambda: check_app_instalada("Topia.exe")]:

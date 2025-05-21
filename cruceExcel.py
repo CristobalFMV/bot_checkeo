@@ -1,11 +1,11 @@
 import pandas as pd
 import warnings
 import lectura as check
+from openpyxl import workbook as wb
+from openpyxl import worksheet as ws
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
-
-
-vicarius_excel = 'A:\\Python\\excels\\vicarius.xlsx'
-telefonos_excel ='A:\\Python\\excels\\telefonos.xlsx'
+vicarius_excel = 'excels/vicarius.xlsx'
+telefonos_excel ='excels/telefonos.xlsx'
 hoja = "10.1.18.1"
 
 #leer excel
