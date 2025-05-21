@@ -11,8 +11,8 @@ columnas_excel = ['IP Address', 'Estado', 'Perfil ', 'Clave', 'ANEXO', 'SERIAL N
        'ADM', 'REMOTO SI/NO ']
 columnas_telefonos = ['Unnamed: 0', 'Número', 'Nombre', 'IP', 'Tipo conexión', 'Unnamed: 5',
        'Unnamed: 6']
-df = pd.read_excel(planilla_vicarius, engine='openpyxl', header=4)
-df_telefonos= pd.read_excel(planilla_telefonos, engine='openpyxl',header=1)
+df = pd.read_excel(planilla_vicarius, engine='openpyxl', header=4) ##vicarius
+df_telefonos= pd.read_excel(planilla_telefonos, engine='openpyxl',header=1) ##telefonos
 #print(df_telefonos.columns)
 #print(df_telefonos.loc[1,columnas_telefonos])
 #print(df.columns)
@@ -22,24 +22,32 @@ df_telefonos= pd.read_excel(planilla_telefonos, engine='openpyxl',header=1)
 def buscarIPtelefonos():
     filasTelefonos = df_telefonos.iloc[0:357]
     datosTelefonos = filasTelefonos.values.tolist()
-    cont2=0
+    ip_list_tel = []
     for i in datosTelefonos:
-        cont2 +=1
         ipTel= i[3]
-    return ipTel
+        if pd.notna(ipTel):
+            ip_list_tel.append(str(ipTel).strip())
+    return ip_list_tel
 def buscarDispositivo():
-    cont = 0
     filas = df.iloc[0:253]
     datos = filas.values.tolist()
+    ip_list_disp = []
     for x in datos:
-        cont += 1
         ip = x[0]
-    return ip
+        if pd.notna(ip):
+            ip_list_disp.append(str(ip).strip())
+    return ip_list_disp
 
 def compareIP():
         ip_telefono = buscarIPtelefonos()
         ip_dispositivo = buscarDispositivo()
-        print(ip_dispositivo)
-        print(ip_telefono)
+        ip_comunes = set(ip_telefono).intersection(ip_dispositivo)
+        print("IP's en Ambos archivos Excel: ")
+        for ip in ip_comunes:
+            print(ip)
+        ip_unicas = set(ip_telefono) - set(ip_dispositivo)
+        print("IP's que no identificadas y presentes en solo 1 archivo Excel")
+        for ip in ip_unicas:
+            print(ip)
 
 compareIP()
