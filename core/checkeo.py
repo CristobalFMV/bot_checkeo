@@ -129,12 +129,10 @@ def checkMac():
                 value = linea.strip().split()[-2]
                 if value:
                     print("Tiene direccion mac: "+value)
-                    with open(ruta_archivo, "a", encoding="utf-8") as f:
-                        f.write("\n===== DIRECCION MAC =====\n\n "+value+"\n")
+                    return value
                 else:
                     print("No se ha encontrado dirección MAC")
-                    with open(ruta_archivo, "a", encoding="utf-8") as f:
-                        f.write("\nDireccion mac no encontrada en el equipo\n")
+
     except subprocess.CalledProcessError as e:
         print("Error checkeando direccion MAC\n"+e)
 def checkHost():
@@ -147,8 +145,7 @@ def checkHost():
 def checkSerial():
     try:
         check_serialnumber = subprocess.check_output("wmic bios get serialnumber",text=True,shell=True)
-        with open(ruta_archivo, "a", encoding="utf-8") as f:
-            f.write("\n===== SERIAL NUMBER =====\n" + check_serialnumber.strip() + "\n")
+        return check_serialnumber
     except subprocess.CalledProcessError as e:
         print("Error leyendo el serialnumber del equipo\n"+e)
 def check_app_instalada(nombre_app):
