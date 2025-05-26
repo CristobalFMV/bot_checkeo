@@ -31,7 +31,6 @@ def pedirPassword():
 checkPassword = pedirPassword()
 with open(ruta_archivo,"a",encoding="utf-8") as f:
     f.write("\n === CONTRASEÑA DEL EQUIPO === \n\n"+checkPassword+"\n")
-import subprocess
 
 def checkIP():
     value = None

@@ -1,11 +1,10 @@
 import pandas as pd
 import warnings
-import lectura as check
-from openpyxl import workbook as wb
-from openpyxl import worksheet as ws
+from core import checkeo as check
+
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
-vicarius_excel = 'excels/vicarius.xlsx'
-telefonos_excel ='excels/telefonos.xlsx'
+vicarius_excel = 'data/vicarius.xlsx'
+telefonos_excel ='data/telefonos.xlsx'
 hoja = "10.1.18.1"
 
 #leer excel
@@ -37,6 +36,6 @@ df.at[indice, "YTB"] = check.checkYTB()
 df.at[indice, "TIPO CPU / AIO"] = check.checkTipoEquipo()
 df.at[indice, "VICARIUS INST. SI/NO"] = "SI" if check.check_app_instalada("Topia.exe") else "NO"
 
-df.to_excel("A:\\Python\\excels\\vicarius_actualizado.xlsx", index=False)
+df.to_excel("A:\\Python\\data\\vicarius_actualizado.xlsx", index=False)
 
 print("✅ Datos actualizados correctamente en el Excel.")

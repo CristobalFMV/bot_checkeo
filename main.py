@@ -1,4 +1,3 @@
-import lectura
-from lectura import runScript
+from core.checkeo import runScript
 
 runScript()

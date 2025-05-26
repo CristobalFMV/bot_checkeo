@@ -2,8 +2,10 @@ import pandas as pd
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
-planilla_vicarius = 'excels\\vicarius.xlsx'
-planilla_telefonos = 'excels\\telefonos.xlsx'
+planilla_vicarius = 'data\\vicarius.xlsx'
+hojas_vicarius = ['10.1.2.', 'HALLAZGOS ', '10.1.3.', ' 10.1.4.', '10.1.5.', '10.1.7.', '10.1.10.', '10.1.11.', ' 10.1.12.', ' 10.1.13.', '10.1.15.', '10.1.16', '10.1.20.1', '10.1.18.1', '10.1.21.1', '192.1.1.0', ' 168.88.162.', '168.88.164.1', '168.88.165.1']
+
+planilla_telefonos = 'data\\telefonos.xlsx'
 columnas_excel = ['IP Address', 'Estado', 'Perfil ', 'Clave', 'ANEXO', 'SERIAL NUMBER ',
        'Direccion MAC', 'UBICACIÓN ', 'Host Name', '   VICARIUS  INST. SI/NO ',
        'estado FW 1=ARRIBA 2=ABAJO ', 'SOPHOS', 'TIPO W XP-7-10-11',
@@ -11,34 +13,33 @@ columnas_excel = ['IP Address', 'Estado', 'Perfil ', 'Clave', 'ANEXO', 'SERIAL N
        'ADM', 'REMOTO SI/NO ']
 columnas_telefonos = ['Unnamed: 0', 'Número', 'Nombre', 'IP', 'Tipo conexión', 'Unnamed: 5',
        'Unnamed: 6']
-df = pd.read_excel(planilla_vicarius, engine='openpyxl', header=4) ##vicarius
+df = pd.read_excel(planilla_vicarius, engine='openpyxl',sheet_name=hojas_vicarius, header=4) ##vicarius
 df_telefonos= pd.read_excel(planilla_telefonos, engine='openpyxl',header=1) ##telefonos
-#print(df_telefonos.columns)
-#print(df_telefonos.loc[1,columnas_telefonos])
-#print(df.columns)
-#print(df.loc[1,columnas_excel])
-#print(df.loc[0:253])
-#print(df.iloc[0:253])
+df_excel = pd.ExcelFile(planilla_vicarius)
+
+
+
 def buscarIPtelefonos():
-    filasTelefonos = df_telefonos.iloc[0:357]
-    datosTelefonos = filasTelefonos.values.tolist()
+    #filasTelefonos = df_telefonos.iloc[0:357]
+    #datosTelefonos = filasTelefonos.values.tolist()
     ip_list_tel = []
-    for i in datosTelefonos:
-        ipTel= i[3]
+    for index, row in df_telefonos.iterrows():
+        ipTel= row.iloc[3]
         if pd.notna(ipTel):
             ip_list_tel.append(str(ipTel).strip())
     return ip_list_tel
 def buscarDispositivo():
-    filas = df.iloc[0:253]
-    datos = filas.values.tolist()
+    #filas = df.iloc[0:253]
+    #datos = filas.values.tolist()
     ip_list_disp = []
-    for x in datos:
-        ip = x[0]
-        if pd.notna(ip):
-            ip_list_disp.append(str(ip).strip())
+    for name_hoja, df_hoja in df.items():
+        for index, row in df_hoja.iterrows():
+            ip = row.iloc[0]
+            if pd.notna(ip):
+                ip_list_disp.append(str(ip).strip())
     return ip_list_disp
 
-def compareIP():
+def findIP():
         ip_telefono = buscarIPtelefonos()
         ip_dispositivo = buscarDispositivo()
         ip_comunes = set(ip_telefono).intersection(ip_dispositivo)
@@ -50,4 +51,4 @@ def compareIP():
         for ip in ip_unicas:
             print(ip)
 
-compareIP()
+findIP()
