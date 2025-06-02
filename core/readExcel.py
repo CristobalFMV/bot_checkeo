@@ -1,11 +1,12 @@
 import pandas as pd
 import warnings
+import checkeo
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
-planilla_vicarius = 'data\\vicarius.xlsx'
+planilla_vicarius = 'A:\\Python\\data\\vicarius.xlsx'
 hojas_vicarius = ['10.1.2.', 'HALLAZGOS ', '10.1.3.', ' 10.1.4.', '10.1.5.', '10.1.7.', '10.1.10.', '10.1.11.', ' 10.1.12.', ' 10.1.13.', '10.1.15.', '10.1.16', '10.1.20.1', '10.1.18.1', '10.1.21.1', '192.1.1.0', ' 168.88.162.', '168.88.164.1', '168.88.165.1']
 
-planilla_telefonos = 'data\\telefonos.xlsx'
+planilla_telefonos = 'A:\\Python\\data\\telefonos.xlsx'
 columnas_excel = ['IP Address', 'Estado', 'Perfil ', 'Clave', 'ANEXO', 'SERIAL NUMBER ',
        'Direccion MAC', 'UBICACIÓN ', 'Host Name', '   VICARIUS  INST. SI/NO ',
        'estado FW 1=ARRIBA 2=ABAJO ', 'SOPHOS', 'TIPO W XP-7-10-11',
@@ -47,7 +48,7 @@ def findIP():
         for ip in ip_comunes:
             print(ip)
         ip_unicas = set(ip_telefono) - set(ip_dispositivo)
-        print("IP's que no identificadas y presentes en solo 1 archivo Excel")
+        print("IP's  no identificadas y presentes en solo 1 archivo Excel.")
         for ip in ip_unicas:
             print(ip)
 

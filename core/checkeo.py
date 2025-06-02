@@ -7,72 +7,53 @@ from tkinter import simpledialog
 
 ####ARCHIVO PARA SCRAPEAR DATOS DEL PC####
 
-hostname = subprocess.check_output("hostname", shell=True, text=True).strip()
-ruta_archivo = os.path.join(os.getcwd(), f"{hostname}_resultado_checkeo.txt")
 
-with open(ruta_archivo, "w", encoding="utf-8") as f:
-    f.write("Información de registro del equipo: " + hostname + "\n")
 def pedirAnexo():
     root = tk.Tk()
     root.withdraw()
     anexo = simpledialog.askstring("ANEXO DEL EQUIPO","Ingrese el Anexo que corresponde a este equipo")
-    print("Ingresado el anexo: "+anexo)
     return anexo
-checkAnexo = pedirAnexo()
-with open(ruta_archivo, "a", encoding="utf-8") as f:
-    f.write("\n ==== ANEXO ==== \n\n" + checkAnexo +"\n")
-
 def pedirPassword():
     root = tk.Tk()
     root.withdraw()
     contrasena = simpledialog.askstring("CONTRASEÑA DEL EQUIPO", "Ingrese la contraseña de este equipo")
-    print("Contraseña guardada")
     return contrasena
-checkPassword = pedirPassword()
-with open(ruta_archivo,"a",encoding="utf-8") as f:
-    f.write("\n === CONTRASEÑA DEL EQUIPO === \n\n"+checkPassword+"\n")
-
+def checkCurrentUser():
+    usuario = getpass.getuser()
+    return usuario
 def checkIP():
-    value = None
+    global value
     try:
         check_ip = subprocess.check_output("ipconfig", shell=True, text=True)
+        value =""
         salida = check_ip.splitlines()
         for linea in salida:
             if "IPv4" in linea:
-                print("linea encontrada " + linea)
                 value = linea.strip().split()[-1]
                 print("Dirección IPv4: " + value)
-                with open(ruta_archivo, "a", encoding="utf-8") as f:
-                    f.write("\n===== DIRECCION IP =====\n\n" + value + "\n")
-                break
+                return value
         if not value:
-            with open(ruta_archivo, "a", encoding="utf-8") as f:
-                f.write("\n===== DIRECCION IP NO ENCONTRADA =====")
+            msg = "No se encontró dirección ip"
+            return msg
     except subprocess.CalledProcessError as e:
         print("Error en la ejecución del comando CMD")
         print(e)
     return value
 def checkProfile():
     check_user = getpass.getuser()
-    with open(ruta_archivo,"a",encoding="utf-8") as f:
-        f.write("\n==== Perfil en el equipo ====\n\n"+check_user+"\n")
+    return check_user
 def checkAdmin():
-
-
     try:
         check_admin = subprocess.check_output("powershell -Command \"[bool]([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)\"",text=True)
         if check_admin.strip() == "True":
-            print("Es administrador")
-            with open(ruta_archivo, "a", encoding="utf-8") as f:
-                f.write("\n==== ¿ES ADMINISTRADOR? ====\n")
-                f.write("\nSI es administrador\n")
+            msg = "Es administrador"
+            return msg
         else:
-            print("No está habilitado como administrador")
-            with open(ruta_archivo, "a", encoding="utf-8") as f:
-                f.write("\n==== ¿ES ADMINISTRADOR? ====\n")
-                f.write("\nNO es administrador\n")
+            msg = "No está habilitado como administrador"
+            return msg
     except subprocess.CalledProcessError as e:
-        print("Ha ocurrido un error")
+        msg_error = (f"Ha ocurrido un error" + {e})
+        return msg_error
 def checkRDP():
     try:
         check_remote = subprocess.check_output('reg query "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" /v fDenyTSConnections'
@@ -80,24 +61,19 @@ def checkRDP():
         salida = check_remote.splitlines()
         for e in salida:
             if "fDenyTSConnections" in e:
-                print("linea encontrada: "+ e)
                 value = e.strip().split()[-1]
                 if value == "0x0":
-                    print("TIENE ACCESO REMOTO")
-                    with open(ruta_archivo, "a", encoding="utf-8") as f:
-                        f.write("\n==== ¿ESTÁ ACTIVADO EL ACCESO REMOTO? ====\n")
-                        f.write("\nTIENE ACCESO REMOTO\n")
+                    msg = "TIENE ACCESO REMOTO"
+                    return msg
                 else:
-                    print("NO TIENE ACCESO REMOTO")
-                    with open(ruta_archivo, "a", encoding="utf-8") as f:
-                        f.write("\n==== ¿ESTÁ ACTIVADO EL ACCESO REMOTO? ====\n")
-                        f.write("\nNO TIENE ACCESO REMOTO\n")
+                    msg = "NO TIENE ACCESO REMOTO"
+                    return msg
     except subprocess.CalledProcessError as e:
-        print("Error checkeando.")
-        print(e)
+        msg_error_check = "Error checkeando"
+        return msg_error_check
 def checkFirewall():
     try:
-        fwCmd = subprocess.check_output("powershell -Command (Get-NetFirewallProfile).Enabled", shell=True, text=True)
+        fwCmd = subprocess.check_output("netsh advfirewall show allprofiles", shell=True, text=True)
         salida = fwCmd.splitlines()
         firewall_activo = False
         for e in salida:
@@ -105,49 +81,43 @@ def checkFirewall():
                 firewall_activo = True
                 break
         if firewall_activo:
-            with open(ruta_archivo, "a", encoding="utf-8") as f:
-                f.write("\n==== ¿ESTÁ ACTIVADO EL FIREWALL? ====\n")
-                f.write("\nTIENE FIREWALL ACTIVO\n")
-            print("firewall ACTIVADO en el equipo")
-
+            msg_firewall_activo = "1"
+            return msg_firewall_activo
         else:
-            with open(ruta_archivo, "a", encoding="utf-8") as f:
-                f.write("\n==== ¿ESTÁ ACTIVADO EL FIREWALL? ====\n")
-                f.write("\nNO, NO TIENE FIREWALL ACTIVO\n")
-            print("firewall DESACTIVADO en el equipo")
+            msg_firewall_desactivado = "2"
+            return msg_firewall_desactivado
 
     except subprocess.CalledProcessError as e:
-        print("Error checkeando firewall")
-        print(e)
+        msg_error ="Ha ocurrido un error leyendo el Firewall "+ e
+        return msg_error
 def checkMac():
     try:
-        check_mac = subprocess.check_output("getmac -v",shell=True, text=True)
+        check_mac = subprocess.check_output("getmac -v", shell=True, text=True)
         salida = check_mac.splitlines()
         for linea in salida:
-            if "Wi-Fi" in linea:
-                print("Linea encontrada: "+linea)
-                value = linea.strip().split()[-2]
-                if value:
-                    print("Tiene direccion mac: "+value)
-                    return value
-                else:
-                    print("No se ha encontrado dirección MAC")
+            if "Ethernet" in linea:
+                partes = linea.strip().split()
+                for parte in partes:
+                    if "-" in parte and len(parte) >= 17:
+                        return parte
+        return "No se ha encontrado dirección MAC"
 
     except subprocess.CalledProcessError as e:
-        print("Error checkeando direccion MAC\n"+e)
+        return f"Error checkeando dirección MAC: {e}"
 def checkHost():
     try:
         check_hostname = subprocess.check_output("hostname",shell=True,text=True)
-        with open(ruta_archivo, "a", encoding="utf-8") as f:
-            f.write("\n===== HOSTNAME =====\n\n" + check_hostname)
+        return check_hostname
     except subprocess.CalledProcessError as e:
-        print("error checkeando Hostname del equipo\n" + e)
+        msg_error = "error checkeando Hostname del equipo\n" + e
+        return msg_error
 def checkSerial():
     try:
         check_serialnumber = subprocess.check_output("wmic bios get serialnumber",text=True,shell=True)
         return check_serialnumber
     except subprocess.CalledProcessError as e:
-        print("Error leyendo el serialnumber del equipo\n"+e)
+        msg = (f"(Error leyendo el serialnumber del equipo\n + {e}")
+        return  msg
 def check_app_instalada(nombre_app):
     rutas = [
         r'HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall',
@@ -159,36 +129,24 @@ def check_app_instalada(nombre_app):
         try:
             comando = f'reg query "{ruta}" /s /f "{nombre_app}" /d'
             resultado = subprocess.check_output(comando, shell=True, text=True, stderr=subprocess.DEVNULL)
-
             if nombre_app.lower() in resultado.lower():
-                print(f"{nombre_app} está instalada (en: {ruta})")
-                with open(ruta_archivo, "a",encoding="utf-8") as f:
-                    f.write(f"\n==== ¿La aplicación {nombre_app} está instalada? ====\n")
-                    f.write(f"\n¡La aplicación {nombre_app} SÍ está instalada en el equipo!\n")
-                return True
-            else:
-                with open(ruta_archivo, "a",encoding="utf-8") as f:
-                    f.write(f"\n==== ¿La aplicación {nombre_app} está instalada? ====\n")
-                    f.write("\nAplicación NO instalada en el equipo\n")
+                return "Sí"
         except subprocess.CalledProcessError:
             continue
+    return "No"
 
-    print(f"{nombre_app} NO está instalada.")
-    return False
 def checkYTB():
     try:
         check_ytb = requests.get("https://www.youtube.com", timeout=5)
         if check_ytb.status_code == 200:
-            print("El equipo tiene acceso a Youtube")
-            with open(ruta_archivo,"a",encoding="utf-8") as f:
-                f.write("\n==== Acceso a YTB ====\n \nSI tiene acceso a Youtube!!\n")
-            return True
+            msg = 'Sí'
+            return msg
         if check_ytb.status_code == 500:
-            with open(ruta_archivo, "a", encoding="utf-8") as f:
-                f.write("\n==== Acceso a YTB ====\n \nNO tiene acceso a Youtube\n")
+            msg = 'No'
+            return msg
     except requests.RequestException as e:
-        print("No se tiene acceso a Youtube: ",e)
-        return False
+        msg_error = 'Ha ocurrido un error '+e
+        return msg_error
 def checkTipoEquipo():
     try:
         tipo = subprocess.check_output(
@@ -196,16 +154,13 @@ def checkTipoEquipo():
             shell=True,
             text=True
         )
-
         tipo = tipo.strip().replace("{", "").replace("}", "")
         lineas = tipo.splitlines()
-
         chasis = []
         for linea in lineas:
             linea = linea.strip()
             if linea.isdigit():
                 chasis.append(int(linea))
-
         descripcion = {
             3: "Desktop/CPU",
             4: "Low Profile Desktop",
@@ -215,17 +170,11 @@ def checkTipoEquipo():
             9: "Laptop",
             10: "Notebook"
         }
-
         tipo_detectado = [descripcion.get(c, f"Desconocido ({c})") for c in chasis]
-
-        with open(ruta_archivo, "a", encoding="utf-8") as f:
-            f.write("\n==== TIPO DE EQUIPO ====\n\n")
-            f.write("\n\n".join(tipo_detectado) + "\n")
-
-        print("Tipo de equipo detectado:", ", ".join(tipo_detectado))
-
+        return tipo_detectado
     except Exception as e:
-        print("Error detectando el tipo de equipo:", e)
+        msg_error = "Error detectando el tipo de equipo: "+ e
+        return msg_error
 
 #for que ejecuta cada funcion previa y evita que el script se detenga si falla una
 #def runScript():
@@ -236,18 +185,6 @@ def checkTipoEquipo():
 #        except Exception as e:
 #            nombre = getattr(func, '__name__', 'función anónima o lambda')
 #            print(f"Error ejecutando {nombre}: {e}")
-
-def checkIPExcel():
-    try:
-        check_ip = subprocess.check_output("ipconfig", shell=True, text=True)
-        salida = check_ip.splitlines()
-        for linea in salida:
-            if "IPv4" in linea:
-                value = linea.strip().split()[-1]
-                return value.strip()
-    except subprocess.CalledProcessError as e:
-        print("Error en ipconfig:", e)
-        return None
 
 
 
