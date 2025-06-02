@@ -1,5 +1,6 @@
 from openpyxl import Workbook, load_workbook
 import checkeo
+from core.checkeo import checkOS
 
 ##aquí se escribe en el excel
 archivo_vicarius = 'A:\\Python\\data\\vicarius.xlsx'
@@ -25,5 +26,14 @@ for ws in wb.worksheets:
             ws[f"K{fila}"] = checkeo.checkFirewall()
             ws[f"L{fila}"] = checkeo.check_app_instalada("Topia.exe")
             ws[f"M{fila}"] = checkeo.check_app_instalada("Sophos.exe")
+            ws[f"N{fila}"] = checkeo.checkOS()
+            ws[f"O{fila}"] = checkeo.checkTipoEquipo()
+            ws[f"P{fila}"] = checkeo.checkScreen()
+            ws[f"R{fila}"] = checkeo.checkYTB()
+            ws[f"S{fila}"] = checkeo.checkAdmin()
+            ws[f"T{fila}"] = checkeo.checkRDP()
+            ws[f"U{fila}"] = checkeo.checkObservaciones()
+            ws[f"V{fila}"] = checkeo.checkNombreSoporte()
+            ws[f"W{fila}"] = checkeo.checkFecha()
             break
 wb.save(archivo_vicarius)

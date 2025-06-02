@@ -1,12 +1,14 @@
+from datetime import date
+from tkinter import simpledialog
+from screeninfo import get_monitors
 import subprocess
-import os
 import getpass
 import requests
 import tkinter as tk
-from tkinter import simpledialog
+import math
+
 
 ####ARCHIVO PARA SCRAPEAR DATOS DEL PC####
-
 
 def pedirAnexo():
     root = tk.Tk()
@@ -46,10 +48,10 @@ def checkAdmin():
     try:
         check_admin = subprocess.check_output("powershell -Command \"[bool]([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)\"",text=True)
         if check_admin.strip() == "True":
-            msg = "Es administrador"
+            msg = "SÍ"
             return msg
         else:
-            msg = "No está habilitado como administrador"
+            msg = "NO"
             return msg
     except subprocess.CalledProcessError as e:
         msg_error = (f"Ha ocurrido un error" + {e})
@@ -63,10 +65,10 @@ def checkRDP():
             if "fDenyTSConnections" in e:
                 value = e.strip().split()[-1]
                 if value == "0x0":
-                    msg = "TIENE ACCESO REMOTO"
+                    msg = "SÍ"
                     return msg
                 else:
-                    msg = "NO TIENE ACCESO REMOTO"
+                    msg = "NO"
                     return msg
     except subprocess.CalledProcessError as e:
         msg_error_check = "Error checkeando"
@@ -134,7 +136,6 @@ def check_app_instalada(nombre_app):
         except subprocess.CalledProcessError:
             continue
     return "No"
-
 def checkYTB():
     try:
         check_ytb = requests.get("https://www.youtube.com", timeout=5)
@@ -171,10 +172,53 @@ def checkTipoEquipo():
             10: "Notebook"
         }
         tipo_detectado = [descripcion.get(c, f"Desconocido ({c})") for c in chasis]
-        return tipo_detectado
+
+        return str(tipo_detectado)
     except Exception as e:
         msg_error = "Error detectando el tipo de equipo: "+ e
         return msg_error
+def checkOS():
+    try:
+        check_os = subprocess.check_output("ver",shell=True, text=True)
+        find_version = check_os.strip().splitlines()[0]
+        strip_ver = find_version.strip().split()[3]
+        windows = strip_ver.split(".")[0]
+        if windows == "10":
+            return "10"
+        elif windows =="7":
+            return "7"
+        elif windows == "11":
+            return "11"
+        else:
+            return "No se encontró versión."
+    except subprocess.CalledProcessError as e:
+        return e
+def checkScreen():
+    global monitores;
+    try:
+        for monitores in get_monitors():
+            alto = (monitores.height_mm / 25.4)**2
+            ancho = (monitores.width_mm / 25.4)**2
+            pitagoras = math.sqrt(alto+ancho)
+            str_pitagoras = str(pitagoras)
+            pulgadas = str_pitagoras.split(".")[0]
+            return pulgadas + " pulgadas"
+    except Exception as e:
+        return e
+def checkObservaciones():
+    root = tk.Tk()
+    root.withdraw()
+    observacion = simpledialog.askstring("OBSERVACION","Escriba la observación si hay una")
+    return observacion
+def checkNombreSoporte():
+    root = tk.Tk()
+    root.withdraw()
+    nombre = simpledialog.askstring("NOMBRE DE QUIEN REVISA", "Escriba su nombre")
+    return nombre
+def checkFecha():
+    fecha = date.today().strftime("%d/%m/%Y")
+    return fecha
+
 
 #for que ejecuta cada funcion previa y evita que el script se detenga si falla una
 #def runScript():
