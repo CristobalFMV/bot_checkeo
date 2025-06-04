@@ -22,7 +22,7 @@ df = pd.read_excel(planilla_vicarius, engine='openpyxl',sheet_name=hojas_vicariu
 df_telefonos= pd.read_excel(planilla_telefonos, engine='openpyxl',header=1) ##telefonos
 df_excel = pd.ExcelFile(planilla_vicarius)
 
-
+###funciones sin uso aún, se espera utilizarlas para regularizar telefonos###
 def recorrerHojasIP():
     for ws in hojas_vicarius:
         findIP()

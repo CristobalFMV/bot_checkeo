@@ -9,6 +9,7 @@ import math
 
 
 ####ARCHIVO PARA SCRAPEAR DATOS DEL PC####
+##instancia global de tkinter para evitar popups
 root = tk.Tk()
 root.withdraw()
 
