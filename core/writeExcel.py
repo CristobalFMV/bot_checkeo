@@ -13,27 +13,24 @@ ws = wb.active
 current_ws = wb['10.1.3.']
 ip_local = checkeo.checkIP()
 
-for ws in wb.worksheets:
-    for fila in range(5,ws.max_row + 1):
-        if ws[f"A{fila}"].value == ip_local:
-            ws[f"C{fila}"] = checkeo.checkCurrentUser()
-            ws[f"D{fila}"] = checkeo.pedirPassword()
-            ws[f"E{fila}"] = checkeo.pedirAnexo()
-            ws[f"F{fila}"] = checkeo.checkSerial()
-            ws[f"G{fila}"] = checkeo.checkMac()
-            ws[f"I{fila}"] = checkeo.checkHost()
-            ws[f"J{fila}"] = checkeo.check_app_instalada("Topia.exe")
-            ws[f"K{fila}"] = checkeo.checkFirewall()
-            ws[f"L{fila}"] = checkeo.check_app_instalada("Topia.exe")
-            ws[f"M{fila}"] = checkeo.check_app_instalada("Sophos.exe")
-            ws[f"N{fila}"] = checkeo.checkOS()
-            ws[f"O{fila}"] = checkeo.checkTipoEquipo()
-            ws[f"P{fila}"] = checkeo.checkScreen()
-            ws[f"R{fila}"] = checkeo.checkYTB()
-            ws[f"S{fila}"] = checkeo.checkAdmin()
-            ws[f"T{fila}"] = checkeo.checkRDP()
-            ws[f"U{fila}"] = checkeo.checkObservaciones()
-            ws[f"V{fila}"] = checkeo.checkNombreSoporte()
-            ws[f"W{fila}"] = checkeo.checkFecha()
-            break
-wb.save(archivo_vicarius)
+
+def escribirExcel(ws, fila):
+    ws[f"C{fila}"] = checkeo.checkCurrentUser()
+    ws[f"D{fila}"] = checkeo.pedirPassword()
+    ws[f"E{fila}"] = checkeo.pedirAnexo()
+    ws[f"F{fila}"] = checkeo.checkSerial()
+    ws[f"G{fila}"] = checkeo.checkMac()
+    ws[f"I{fila}"] = checkeo.checkHost()
+    ws[f"J{fila}"] = checkeo.check_app_instalada("Topia.exe")
+    ws[f"K{fila}"] = checkeo.checkFirewall()
+    ws[f"L{fila}"] = checkeo.check_app_instalada("Topia.exe")
+    ws[f"M{fila}"] = checkeo.check_app_instalada("Sophos.exe")
+    ws[f"N{fila}"] = checkeo.checkOS()
+    ws[f"O{fila}"] = checkeo.checkTipoEquipo()
+    ws[f"P{fila}"] = checkeo.checkScreen()
+    ws[f"R{fila}"] = checkeo.checkYTB()
+    ws[f"S{fila}"] = checkeo.checkAdmin()
+    ws[f"T{fila}"] = checkeo.checkRDP()
+    ws[f"U{fila}"] = checkeo.checkObservaciones()
+    ws[f"V{fila}"] = checkeo.checkNombreSoporte()
+    ws[f"W{fila}"] = checkeo.checkFecha()

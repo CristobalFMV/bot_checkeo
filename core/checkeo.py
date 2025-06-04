@@ -9,15 +9,15 @@ import math
 
 
 ####ARCHIVO PARA SCRAPEAR DATOS DEL PC####
+root = tk.Tk()
+root.withdraw()
 
 def pedirAnexo():
-    root = tk.Tk()
-    root.withdraw()
+
     anexo = simpledialog.askstring("ANEXO DEL EQUIPO","Ingrese el Anexo que corresponde a este equipo")
     return anexo
 def pedirPassword():
-    root = tk.Tk()
-    root.withdraw()
+
     contrasena = simpledialog.askstring("CONTRASEÑA DEL EQUIPO", "Ingrese la contraseña de este equipo")
     return contrasena
 def checkCurrentUser():
@@ -206,13 +206,10 @@ def checkScreen():
     except Exception as e:
         return e
 def checkObservaciones():
-    root = tk.Tk()
-    root.withdraw()
+
     observacion = simpledialog.askstring("OBSERVACION","Escriba la observación si hay una")
     return observacion
 def checkNombreSoporte():
-    root = tk.Tk()
-    root.withdraw()
     nombre = simpledialog.askstring("NOMBRE DE QUIEN REVISA", "Escriba su nombre")
     return nombre
 def checkFecha():

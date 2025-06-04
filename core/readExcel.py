@@ -2,10 +2,14 @@ import pandas as pd
 import warnings
 import checkeo
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
+#planilla_vicarius = 'A:\\Python\\data\\vicarius.xlsx'
+#planilla_telefonos = 'A:\\Python\\data\\telefonos.xlsx'
 
 planilla_vicarius = 'A:\\Python\\data\\vicarius.xlsx'
-hojas_vicarius = ['10.1.2.', 'HALLAZGOS ', '10.1.3.', ' 10.1.4.', '10.1.5.', '10.1.7.', '10.1.10.', '10.1.11.', ' 10.1.12.', ' 10.1.13.', '10.1.15.', '10.1.16', '10.1.20.1', '10.1.18.1', '10.1.21.1', '192.1.1.0', ' 168.88.162.', '168.88.164.1', '168.88.165.1']
-
+hojas_vicarius = ['10.1.2.', 'HALLAZGOS ', '10.1.3.', ' 10.1.4.', '10.1.5.', '10.1.7.',
+                  '10.1.10.', '10.1.11.', ' 10.1.12.', ' 10.1.13.', '10.1.15.', '10.1.16',
+                  '10.1.20.1', '10.1.18.1', '10.1.21.1', '192.1.1.0', ' 168.88.162.', '168.88.164.1'
+                    , '168.88.165.1']
 planilla_telefonos = 'A:\\Python\\data\\telefonos.xlsx'
 columnas_excel = ['IP Address', 'Estado', 'Perfil ', 'Clave', 'ANEXO', 'SERIAL NUMBER ',
        'Direccion MAC', 'UBICACIÓN ', 'Host Name', '   VICARIUS  INST. SI/NO ',
@@ -19,7 +23,9 @@ df_telefonos= pd.read_excel(planilla_telefonos, engine='openpyxl',header=1) ##te
 df_excel = pd.ExcelFile(planilla_vicarius)
 
 
-
+def recorrerHojasIP():
+    for ws in hojas_vicarius:
+        findIP()
 def buscarIPtelefonos():
     #filasTelefonos = df_telefonos.iloc[0:357]
     #datosTelefonos = filasTelefonos.values.tolist()
@@ -28,7 +34,7 @@ def buscarIPtelefonos():
         ipTel= row.iloc[3]
         if pd.notna(ipTel):
             ip_list_tel.append(str(ipTel).strip())
-    return ip_list_tel
+    return "telefono con ip: "+ str(ip_list_tel)
 def buscarDispositivo():
     #filas = df.iloc[0:253]
     #datos = filas.values.tolist()
@@ -38,7 +44,8 @@ def buscarDispositivo():
             ip = row.iloc[0]
             if pd.notna(ip):
                 ip_list_disp.append(str(ip).strip())
-    return ip_list_disp
+        print("ip encontrada "+ip)
+    return "dispositivo con ip: "+ str(ip_list_disp)
 
 def findIP():
         ip_telefono = buscarIPtelefonos()
@@ -52,4 +59,4 @@ def findIP():
         for ip in ip_unicas:
             print(ip)
 
-findIP()
+recorrerHojasIP()
