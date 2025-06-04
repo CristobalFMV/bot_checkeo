@@ -1,8 +1,9 @@
+
 from openpyxl import load_workbook
 import checkeo
-from core import main
+from ruta_excel import archivo_vicarius
 
-archivo_vicarius = main.archivo_vicarius
+archivo_vicarius = archivo_vicarius
 wb = load_workbook(archivo_vicarius)
 ws = wb.active
 ip_local = checkeo.checkIP()
