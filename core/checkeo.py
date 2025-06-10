@@ -1,29 +1,36 @@
 from datetime import date
-from tkinter import simpledialog
+from tkinter import simpledialog, Button
 from screeninfo import get_monitors
 import subprocess
 import getpass
 import requests
 import tkinter as tk
 import math
-
+import re
 
 ####ARCHIVO PARA SCRAPEAR DATOS DEL PC####
 ##instancia global de tkinter para evitar popups
 root = tk.Tk()
 root.withdraw()
 
+def tieneHuellero():
+    huellero = simpledialog.askstring("HUELLERO", "¿El equipo tiene huellero?")
+    return huellero
 def pedirAnexo():
-
     anexo = simpledialog.askstring("ANEXO DEL EQUIPO","Ingrese el Anexo que corresponde a este equipo")
     return anexo
 def pedirPassword():
 
     contrasena = simpledialog.askstring("CONTRASEÑA DEL EQUIPO", "Ingrese la contraseña de este equipo")
     return contrasena
+def pedirUbicacion():
+    ubicacion = simpledialog.askstring("UBICACIÓN", "Ingrese el servicio donde está ubicado el equipo")
+    return ubicacion
 def checkCurrentUser():
-    usuario = getpass.getuser()
-    return usuario
+    output = subprocess.check_output("wmic useraccount get name", shell=True, text=True)
+    lines = output.splitlines()
+    users = [line.strip() for line in lines if line.strip() and "Name" not in line]
+    return str(users)
 def checkIP():
     global value
     try:
@@ -47,16 +54,18 @@ def checkProfile():
     return check_user
 def checkAdmin():
     try:
-        check_admin = subprocess.check_output("powershell -Command \"[bool]([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)\"",text=True)
-        if check_admin.strip() == "True":
-            msg = "SÍ"
-            return msg
-        else:
-            msg = "NO"
-            return msg
+        cmd = [
+            "powershell",
+            "-NoProfile",
+            "-Command",
+            "[bool]([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"
+        ]
+        result = subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL)
+        return "SÍ" if result.strip() == "True" else "NO"
     except subprocess.CalledProcessError as e:
-        msg_error = (f"Ha ocurrido un error" + {e})
-        return msg_error
+        return f"⚠️ Error al verificar privilegios de administrador: {e}"
+    except FileNotFoundError:
+        return "❌ PowerShell no está disponible en este sistema."
 def checkRDP():
     try:
         check_remote = subprocess.check_output('reg query "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" /v fDenyTSConnections'
@@ -227,7 +236,6 @@ def checkFecha():
 #        except Exception as e:
 #            nombre = getattr(func, '__name__', 'función anónima o lambda')
 #            print(f"Error ejecutando {nombre}: {e}")
-
 
 
 

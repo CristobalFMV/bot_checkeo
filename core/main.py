@@ -13,24 +13,27 @@ wb = load_workbook(archivo_vicarius)
 ip_local = checkeo.checkIP()
 encontrada = False
 
-for hoja in hojas_vicarius:
+try:
+    for hoja in hojas_vicarius:
+        if encontrada:
+            break
+        ws = wb[hoja]
+
+        for fila in range(5, ws.max_row + 1):
+            celda = ws[f"A{fila}"]
+            if celda.value and str(celda.value).strip() == ip_local:
+                writeExcel.escribirExcel(ws, fila)
+                print("encontrado en fila"+str(fila) + str(ws))
+                encontrada = True
+                break
+            elif celda.value and str(celda.value).strip() == ip_local:
+                encontrada = False
+                print("no encontrado")
+                break
     if encontrada:
-        break
-    ws = wb[hoja]
-
-    for fila in range(5, ws.max_row + 1):
-        celda = ws[f"A{fila}"]
-        if celda.value and str(celda.value).strip() == ip_local:
-            writeExcel.escribirExcel(ws, fila)
-            print("encontrado en fila"+str(fila) + str(ws))
-            encontrada = True
-            break
-        elif celda.value and str(celda.value).strip() == ip_local:
-            encontrada = False
-            print("no encontrado")
-            break
-if encontrada:
-    wb.save(archivo_vicarius)
-else:
-    print("IP no encontrada en ninguna hoja.")
-
+        wb.save(archivo_vicarius)
+    else:
+        print("IP no encontrada en ninguna hoja.")
+except:
+    msg = "Ha ocurrido un error inesperado."
+    print(msg)
