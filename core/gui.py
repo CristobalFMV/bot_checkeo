@@ -1,7 +1,7 @@
 import tkinter as tk
 import socket
 from tkinter import messagebox
-
+import checkeo as check
 # Función para obtener la IP local
 def obtener_ip_local():
     try:
