@@ -7,9 +7,8 @@ import requests
 import tkinter as tk
 import math
 import re
-
 ####ARCHIVO PARA SCRAPEAR DATOS DEL PC####
-##instancia global de tkinter para evitar popups
+#instancia global de tkinter
 root = tk.Tk()
 root.withdraw()
 
@@ -143,9 +142,10 @@ def check_app_instalada(nombre_app):
             resultado = subprocess.check_output(comando, shell=True, text=True, stderr=subprocess.DEVNULL)
             if nombre_app.lower() in resultado.lower():
                 return "Sí"
+            else:
+                return "No"
         except subprocess.CalledProcessError:
             continue
-    return "No"
 def checkYTB():
     try:
         check_ytb = requests.get("https://www.youtube.com", timeout=5)
@@ -225,18 +225,6 @@ def checkNombreSoporte():
 def checkFecha():
     fecha = date.today().strftime("%d/%m/%Y")
     return fecha
-
-
-#for que ejecuta cada funcion previa y evita que el script se detenga si falla una
-#def runScript():
-#    for func in [checkIP, checkHost, checkMac, checkSerial, checkAdmin, checkRDP, checkProfile,
-#                 checkYTB, checkTipoEquipo, lambda: check_app_instalada("Topia.exe")]:
-#        try:
-#            func()
-#        except Exception as e:
-#            nombre = getattr(func, '__name__', 'función anónima o lambda')
-#            print(f"Error ejecutando {nombre}: {e}")
-
 
 
 
