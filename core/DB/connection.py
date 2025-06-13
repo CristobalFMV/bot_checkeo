@@ -1,11 +1,7 @@
 import sqlite3
 import writeExcel as equipoExcel
 
-
-""" 
-Se utiliza .cursor() para crear consultas SQL a través del subcomando .execute()
-"""
-
+'''Conexion de prueba'''
 
 def crear_bd():
     conn = sqlite3.connect("equipos_hospital.db")

@@ -1,3 +1,4 @@
+import time
 
 from openpyxl import load_workbook
 import checkeo
@@ -44,10 +45,13 @@ class Equipo:
         try:
             ws[f"C{fila}"] = checkeo.checkCurrentUser()
             ws[f"D{fila}"] = checkeo.pedirPassword()
+            time.sleep(1)
             ws[f"E{fila}"] = checkeo.pedirAnexo()
+            time.sleep(1)
             ws[f"F{fila}"] = checkeo.checkSerial()
             ws[f"G{fila}"] = checkeo.checkMac()
             ws[f"H{fila}"] = checkeo.pedirUbicacion()
+            time.sleep(1)
             ws[f"I{fila}"] = checkeo.checkHost()
             ws[f"J{fila}"] = checkeo.check_app_instalada("Topia.exe")
             ws[f"K{fila}"] = checkeo.checkFirewall()
