@@ -1,5 +1,4 @@
 import sqlite3
-import writeExcel as equipoExcel
 
 '''Conexion de prueba'''
 
@@ -11,7 +10,6 @@ def crear_bd():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             ip TEXT UNIQUE,
             users TEXT,
-            password TEXT,
             anexo TEXT,
             serial TEXT,
             mac TEXT,
@@ -40,7 +38,7 @@ def guardar_en_bd(equipo):
     cursor = conn.cursor()
     cursor.execute("""
             INSERT OR REPLACE INTO equipos (
-                ip, users, password, anexo, serial, mac, ubicacion, host,
+                ip, users, anexo, serial, mac, ubicacion, host,
                 app_install1, firewall, app_install2, sistema_op, tipo_cpu,
                 pantalla, huellero, ytb_premium, admin, remoto,
                 observacion, nombre_soporte, fecha
@@ -48,7 +46,6 @@ def guardar_en_bd(equipo):
         """, (
         equipo.ip,
         equipo.users,
-        equipo.password,
         equipo.anexo,
         equipo.serial,
         equipo.mac,
@@ -71,9 +68,4 @@ def guardar_en_bd(equipo):
     conn.commit()
     conn.close()
 
-if __name__ == "__main__":
-    crear_bd()
-    equipo = equipoExcel.Equipo()
-    guardar_en_bd(equipo)
-    print("GUARDADO CORRECTAMENTE EN BD!")
 

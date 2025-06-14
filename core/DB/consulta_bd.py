@@ -1,14 +1,13 @@
-import sqlite3
+from core.excel.writeExcel import Equipo
+from core.DB.model import get_equipo_local
+from core.DB.connection_server import guardar_en_bd
+# Obtener datos del sistema
+datos = get_equipo_local()
 
-def ver_equipos_bd():
-    conn = sqlite3.connect("equipos_hospital.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM equipos")
-    filas = cursor.fetchall()
+# Crear objeto
+datos["id"] = None
+equipo = Equipo(**datos)
 
-    for f in filas:
-        print(f)
-    conn.close()
-
-if __name__ == '__main__':
-    ver_equipos_bd()
+# Guardar en base de datos
+guardar_en_bd(equipo)
+print("✅ Equipo guardado en base de datos correctamente.")

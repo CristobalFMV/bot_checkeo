@@ -1,17 +1,22 @@
 from datetime import date
-from tkinter import simpledialog, Button
+from tkinter import simpledialog
 from screeninfo import get_monitors
-import subprocess
 import getpass
 import requests
 import tkinter as tk
 import math
-import re
-####ARCHIVO PARA SCRAPEAR DATOS DEL PC####
-#instancia global de tkinter
+import ctypes
+import wmi
+import socket
+import winreg
+import win32com.client
+import uuid
+import platform
+
 root = tk.Tk()
 root.withdraw()
 
+'''
 def tieneHuellero():
     huellero = simpledialog.askstring("HUELLERO", "¿El equipo tiene huellero?")
     return huellero
@@ -24,128 +29,74 @@ def pedirPassword():
     return contrasena
 def pedirUbicacion():
     ubicacion = simpledialog.askstring("UBICACIÓN", "Ingrese el servicio donde está ubicado el equipo")
-    return ubicacion
+    return ubicacion'''
 def checkCurrentUser():
-    output = subprocess.check_output("wmic useraccount get name", shell=True, text=True)
-    lines = output.splitlines()
-    users = [line.strip() for line in lines if line.strip() and "Name" not in line]
-    return str(users)
+    return getpass.getuser()
 def checkIP():
-    global value
     try:
-        check_ip = subprocess.check_output("ipconfig", shell=True, text=True)
-        value =""
-        salida = check_ip.splitlines()
-        for linea in salida:
-            if "IPv4" in linea:
-                value = linea.strip().split()[-1]
-                print("Dirección IPv4: " + value)
-                return value
-        if not value:
-            msg = "No se encontró dirección ip"
-            return msg
-    except subprocess.CalledProcessError as e:
-        print("Error en la ejecución del comando CMD")
-        print(e)
-    return value
+        hostname = socket.gethostname()
+        ip_address = socket.gethostbyname(hostname)
+        return ip_address
+    except Exception as e:
+        return f"Error obteniendo IP: {e}"
 def checkProfile():
     check_user = getpass.getuser()
     return check_user
 def checkAdmin():
     try:
-        cmd = [
-            "powershell",
-            "-NoProfile",
-            "-Command",
-            "[bool]([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"
-        ]
-        result = subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL)
-        return "SÍ" if result.strip() == "True" else "NO"
-    except subprocess.CalledProcessError as e:
-        return f"⚠️ Error al verificar privilegios de administrador: {e}"
-    except FileNotFoundError:
-        return "❌ PowerShell no está disponible en este sistema."
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+        return "SÍ" if is_admin else "NO"
+    except:
+        return "❌ No se pudo verificar privilegios de administrador."
 def checkRDP():
     try:
-        check_remote = subprocess.check_output('reg query "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" /v fDenyTSConnections'
-, shell=True,text=True)
-        salida = check_remote.splitlines()
-        for e in salida:
-            if "fDenyTSConnections" in e:
-                value = e.strip().split()[-1]
-                if value == "0x0":
-                    msg = "SÍ"
-                    return msg
-                else:
-                    msg = "NO"
-                    return msg
-    except subprocess.CalledProcessError as e:
-        msg_error_check = "Error checkeando"
-        return msg_error_check
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Terminal Server")
+        value, _ = winreg.QueryValueEx(key, "fDenyTSConnections")
+        return "SÍ" if value == 0 else "NO"
+    except Exception as e:
+        return f"Error leyendo RDP: {e}"
 def checkFirewall():
     try:
-        fwCmd = subprocess.check_output("netsh advfirewall show allprofiles", shell=True, text=True)
-        salida = fwCmd.splitlines()
-        firewall_activo = False
-        for e in salida:
-            if e.strip() == "True":
-                firewall_activo = True
-                break
-        if firewall_activo:
-            msg_firewall_activo = "1"
-            return msg_firewall_activo
-        else:
-            msg_firewall_desactivado = "2"
-            return msg_firewall_desactivado
+        fwMgr = win32com.client.Dispatch("HNetCfg.FwMgr")
+        policy = fwMgr.LocalPolicy.CurrentProfile
+        return "1" if policy.FirewallEnabled else "2"
+    except Exception as e:
+        return f"Error leyendo firewall: {e}"
 
-    except subprocess.CalledProcessError as e:
-        msg_error ="Ha ocurrido un error leyendo el Firewall "+ e
-        return msg_error
 def checkMac():
-    try:
-        check_mac = subprocess.check_output("getmac -v", shell=True, text=True)
-        salida = check_mac.splitlines()
-        for linea in salida:
-            if "Ethernet" in linea:
-                partes = linea.strip().split()
-                for parte in partes:
-                    if "-" in parte and len(parte) >= 17:
-                        return parte
-        return "No se ha encontrado dirección MAC"
+    mac = uuid.getnode()
+    return ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
 
-    except subprocess.CalledProcessError as e:
-        return f"Error checkeando dirección MAC: {e}"
 def checkHost():
-    try:
-        check_hostname = subprocess.check_output("hostname",shell=True,text=True)
-        return check_hostname
-    except subprocess.CalledProcessError as e:
-        msg_error = "error checkeando Hostname del equipo\n" + e
-        return msg_error
+    return socket.gethostname()
 def checkSerial():
     try:
-        check_serialnumber = subprocess.check_output("wmic bios get serialnumber",text=True,shell=True)
-        return check_serialnumber
-    except subprocess.CalledProcessError as e:
-        msg = (f"(Error leyendo el serialnumber del equipo\n + {e}")
-        return  msg
+        c = wmi.WMI()
+        for bios in c.Win32_BIOS():
+            return bios.SerialNumber
+    except Exception as e:
+        return f"Error leyendo el serial: {e}"
 def check_app_instalada(nombre_app):
-    rutas = [
-        r'HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall',
-        r'HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall',
-        r'HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall'
+    claves = [
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"),
+        (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
     ]
-
-    for ruta in rutas:
+    for root, path in claves:
         try:
-            comando = f'reg query "{ruta}" /s /f "{nombre_app}" /d'
-            resultado = subprocess.check_output(comando, shell=True, text=True, stderr=subprocess.DEVNULL)
-            if nombre_app.lower() in resultado.lower():
-                return "Sí"
-            else:
-                return "No"
-        except subprocess.CalledProcessError:
+            with winreg.OpenKey(root, path) as key:
+                for i in range(0, winreg.QueryInfoKey(key)[0]):
+                    subkey_name = winreg.EnumKey(key, i)
+                    with winreg.OpenKey(key, subkey_name) as subkey:
+                        try:
+                            name = winreg.QueryValueEx(subkey, "DisplayName")[0]
+                            if nombre_app.lower() in name.lower():
+                                return "Sí"
+                        except FileNotFoundError:
+                            continue
+        except FileNotFoundError:
             continue
+    return "No"
 def checkYTB():
     try:
         check_ytb = requests.get("https://www.youtube.com", timeout=5)
@@ -160,18 +111,12 @@ def checkYTB():
         return msg_error
 def checkTipoEquipo():
     try:
-        tipo = subprocess.check_output(
-            'powershell -Command "Get-WmiObject -Class Win32_SystemEnclosure | Select-Object -ExpandProperty ChassisTypes"',
-            shell=True,
-            text=True
-        )
-        tipo = tipo.strip().replace("{", "").replace("}", "")
-        lineas = tipo.splitlines()
-        chasis = []
-        for linea in lineas:
-            linea = linea.strip()
-            if linea.isdigit():
-                chasis.append(int(linea))
+        c = wmi.WMI()
+        chasis_list = []
+        for enclosure in c.Win32_SystemEnclosure():
+            if enclosure.ChassisTypes:
+                chasis_list.extend(enclosure.ChassisTypes)
+
         descripcion = {
             3: "Desktop/CPU",
             4: "Low Profile Desktop",
@@ -181,28 +126,13 @@ def checkTipoEquipo():
             9: "Laptop",
             10: "Notebook"
         }
-        tipo_detectado = [descripcion.get(c, f"Desconocido ({c})") for c in chasis]
 
-        return str(tipo_detectado)
+        tipo_detectado = [descripcion.get(c, f"Desconocido ({c})") for c in chasis_list]
+        return str(tipo_detectado) if tipo_detectado else "No se pudo detectar el tipo de equipo"
     except Exception as e:
-        msg_error = "Error detectando el tipo de equipo: "+ e
-        return msg_error
+        return f"⚠️ Error detectando el tipo de equipo: {e}"
 def checkOS():
-    try:
-        check_os = subprocess.check_output("ver",shell=True, text=True)
-        find_version = check_os.strip().splitlines()[0]
-        strip_ver = find_version.strip().split()[3]
-        windows = strip_ver.split(".")[0]
-        if windows == "10":
-            return "10"
-        elif windows =="7":
-            return "7"
-        elif windows == "11":
-            return "11"
-        else:
-            return "No se encontró versión."
-    except subprocess.CalledProcessError as e:
-        return e
+    return platform.release()  # "10", "11", etc.
 def checkScreen():
     global monitores;
     try:
@@ -223,7 +153,7 @@ def checkNombreSoporte():
     nombre = simpledialog.askstring("NOMBRE DE QUIEN REVISA", "Escriba su nombre")
     return nombre
 def checkFecha():
-    fecha = date.today().strftime("%d/%m/%Y")
+    fecha = date.today().strftime("%Y-%m-%d")
     return fecha
 
 

@@ -1,47 +1,53 @@
 import pyodbc
+# Cambia estos valores según tu entorno
+driver = 'ODBC Driver 17 for SQL Server'
+server = '168.88.162.66'
+database = 'DB_INFORMATICA'
+username = 'soporte_ext'
+password = 'Soporte1234567'
 
-con = pyodbc.connect('DSN=SERVER_DEBUG;Trusted_Connection=yes;')
-
-cursor = con.cursor()
-
-# Datos a insertar
-datos = (
-    '192.168.1.10',       # ip
-    'soporte01',          # users
-    'pass123',            # password
-    '1234',               # anexo
-    'SN123456',           # serial
-    'AA-BB-CC-DD-EE-FF',  # mac
-    'Sala 1',             # ubicacion
-    'HOST-PC',            # host
-    'Google Chrome',      # app_install1
-    'Activo',             # firewall
-    'Topia',              # app_install2
-    'Windows 10',         # sistema_op
-    'Intel i5',           # tipo_cpu
-    'Samsung 24"',        # pantalla
-    'Sí',                 # huellero
-    'No',                 # ytb_premium
-    'Sí',                 # admin
-    'Sí',                 # remoto
-    'Sin observaciones',  # observacion
-    'Cristóbal',          # nombre_soporte
-    '2025-06-12'          # fecha
-)
-
-# Consulta de inserción (id se autogenera)
-sql = '''
-INSERT INTO equipos (
-    ip, users, password, anexo, serial, mac, ubicacion, host,
-    app_install1, firewall, app_install2, sistema_op, tipo_cpu,
-    pantalla, huellero, ytb_premium, admin, remoto, observacion,
-    nombre_soporte, fecha
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+# Cadena de conexión completa
+conn_str = f'''
+DRIVER={{{driver}}};
+SERVER={server};
+DATABASE={database};
+UID={username};
+PWD={password};
 '''
+def convertir_a_bit(valor):
+    if isinstance(valor, str):
+        return 1 if valor.strip().lower() in ['sí', 'si', 'yes', 'true', '1'] else 0
+    return int(bool(valor))
 
-cursor.execute(sql,datos)
-con.commit()
-
-print("Inserción correcta")
-cursor.close()
-con.close()
+def guardar_en_bd(equipo):
+    conn = pyodbc.connect(conn_str)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO T_REG_SOPORTE_EXTERNO (
+            IP_EQUIPO, N_SERIE, MAC, HOSTNAME, SISTEMA_OPERATIVO, TIPO_CPU,
+            PULGADAS_PANTALLA, ANEXO_USUARIO, UBICACION, CTA_ADMINISTRADOR,
+            PING_YOUTUBE, APP_SOFOS, APP_VICARIUS, HUELLERO, FIREWALL_WINDOWS,
+            ESCRITORIO_REMOT, OBSERVACIONES, USER_REGISTRA
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        equipo.ip,
+        equipo.serial,
+        equipo.mac,
+        equipo.host,
+        equipo.sistema_op,
+        equipo.tipo_cpu,
+        equipo.pantalla,
+        equipo.anexo,
+        equipo.ubicacion,
+        convertir_a_bit(equipo.admin),
+        convertir_a_bit(equipo.ytb_premium),
+        convertir_a_bit(equipo.app_install1),
+        convertir_a_bit(equipo.app_install2),
+        convertir_a_bit(equipo.huellero),
+        convertir_a_bit(equipo.firewall),
+        convertir_a_bit(equipo.remoto),
+        equipo.observacion,
+        equipo.users,
+    ))
+    conn.commit()
+    conn.close()
