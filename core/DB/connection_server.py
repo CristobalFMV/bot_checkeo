@@ -1,4 +1,6 @@
 import pyodbc
+from core.gui.users import obtener_usuarios, insertar_usuarios_sql
+from core.DB.consulta_bd import equipo
 # Cambia estos valores según tu entorno
 driver = 'ODBC Driver 17 for SQL Server'
 server = '168.88.162.66'
@@ -28,7 +30,8 @@ def guardar_en_bd(equipo):
             PULGADAS_PANTALLA, ANEXO_USUARIO, UBICACION, CTA_ADMINISTRADOR,
             PING_YOUTUBE, APP_SOFOS, APP_VICARIUS, HUELLERO, FIREWALL_WINDOWS,
             ESCRITORIO_REMOT, OBSERVACIONES, USER_REGISTRA
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) OUTPUT INSERTED.ID_REG
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         equipo.ip,
         equipo.serial,
@@ -49,5 +52,13 @@ def guardar_en_bd(equipo):
         equipo.observacion,
         equipo.users,
     ))
+    id_reg = cursor.fetchone()[0]
     conn.commit()
     conn.close()
+    return id_reg
+
+# --- USO ---
+id_reg = guardar_en_bd(equipo)
+usuarios = obtener_usuarios()
+insertar_usuarios_sql(usuarios, id_reg)
+print(f"Equipo registrado con ID_REG {id_reg} y {len(usuarios)} usuarios insertados.")

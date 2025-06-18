@@ -24,9 +24,9 @@ def get_equipo_local():
         "mac": mac,
         "ubicacion": "",  # Puedes dejarlo vacío o configurarlo según lógica local
         "host": host,
-        "app_install1": "Topia" if app_instalada("Topia") else "No",
+        "app_install1": "SI" if app_instalada("Topia.exe") else "No",
         "firewall": obtener_estado_firewall(),
-        "app_install2": "Sofos" if app_instalada("Sofos") else "No",
+        "app_install2": "SI" if app_instalada("Sophos UI.exe") else "No",
         "sistema_op": sistema_op,
         "tipo_cpu": platform.processor(),
         "pantalla": "",
