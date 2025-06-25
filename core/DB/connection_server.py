@@ -1,5 +1,5 @@
 import pyodbc
-from core.gui.users import obtener_usuarios, insertar_usuarios_sql
+from core.modules.users import obtener_usuarios, insertar_usuarios_sql
 from core.DB.consulta_bd import equipo
 # Cambia estos valores según tu entorno
 driver = 'ODBC Driver 17 for SQL Server'

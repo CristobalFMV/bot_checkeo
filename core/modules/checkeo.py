@@ -2,6 +2,7 @@ import os.path
 from datetime import date
 from tkinter import simpledialog
 from screeninfo import get_monitors
+import subprocess
 import getpass
 import requests
 import tkinter as tk
@@ -58,14 +59,43 @@ def checkRDP():
         return "SÍ" if value == 0 else "NO"
     except Exception as e:
         return f"Error leyendo RDP: {e}"
-def checkFirewall():
+def obtener_estado_firewall():
     try:
-        fwMgr = win32com.client.Dispatch("HNetCfg.FwMgr")
-        policy = fwMgr.LocalPolicy.CurrentProfile
-        return "1" if policy.FirewallEnabled else "2"
-    except Exception as e:
-        return f"Error leyendo firewall: {e}"
+        comando = [
+            "powershell",
+            "-Command",
+            "Get-NetFirewallProfile | Select-Object Name, Enabled"
+        ]
+        resultado = subprocess.run(comando, capture_output=True, text=True, check=True)
+        salida = resultado.stdout.strip().splitlines()
 
+        estados = {}
+        perfil_actual = None
+
+        for linea in salida:
+            if "Domain" in linea:
+                perfil_actual = "Dominio"
+            elif "Private" in linea:
+                perfil_actual = "Privado"
+            elif "Public" in linea:
+                perfil_actual = "Público"
+
+            if "True" in linea:
+                estados[perfil_actual] = True
+            elif "False" in linea:
+                estados[perfil_actual] = False
+
+        # Evaluamos los estados
+        valores = list(estados.values())
+        if all(valores):
+            return "1"  # Todos activos
+        elif not any(valores):
+            return "2"  # Todos desactivados
+        else:
+            return "Algunos perfiles activos"
+    except subprocess.CalledProcessError as e:
+        print("Error al obtener el estado del firewall:", e)
+        return None
 def checkMac():
     mac = uuid.getnode()
     return ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
