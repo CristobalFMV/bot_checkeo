@@ -79,7 +79,7 @@ def procesar_datos():
         ip=ip,
         usuario=check.checkCurrentUser(),
         anexo=anexo,
-        serial=check.checkSerial(),
+        serial=check.check_serial(),
         mac=check.checkMac(),
         ubicacion=ubicacion,
         host=check.checkHost(),

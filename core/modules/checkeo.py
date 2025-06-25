@@ -102,13 +102,34 @@ def checkMac():
 
 def checkHost():
     return socket.gethostname()
-def checkSerial():
+
+
+def check_serial():
     try:
         c = wmi.WMI()
-        for bios in c.Win32_BIOS():
-            return bios.SerialNumber
+
+        # Intenta con Win32_BIOS
+        bios_list = c.Win32_BIOS()
+        if bios_list:
+            serial = bios_list[0].SerialNumber.strip()
+            if serial and "O.E.M" not in serial and serial.lower() != "none":
+                print(serial)
+                return serial
+
+        # Fallback con Win32_SystemEnclosure
+        enclosure_list = c.Win32_SystemEnclosure()
+        if enclosure_list:
+            serial = enclosure_list[0].SerialNumber.strip()
+            if serial and "O.E.M" not in serial and serial.lower() != "none":
+                print(serial)
+                return serial
+
+        return "Serial no disponible o inválido"
+
     except Exception as e:
         return f"Error leyendo el serial: {e}"
+
+
 def check_app_instalada(nombre_app):
     claves = [
         (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
