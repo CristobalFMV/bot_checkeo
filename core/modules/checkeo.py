@@ -130,28 +130,15 @@ def check_serial():
         return f"Error leyendo el serial: {e}"
 
 
-def check_app_instalada(nombre_app):
-    claves = [
-        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
-        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"),
-        (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
-    ]
-    for root, path in claves:
-        try:
-            with winreg.OpenKey(root, path) as key:
-                for i in range(0, winreg.QueryInfoKey(key)[0]):
-                    subkey_name = winreg.EnumKey(key, i)
-                    with winreg.OpenKey(key, subkey_name) as subkey:
-                        try:
-                            name = winreg.QueryValueEx(subkey, "DisplayName")[0]
-                            if nombre_app.lower() in name.lower():
-                                return "Sí"
-                        except FileNotFoundError:
-                            continue
-        except FileNotFoundError:
-            continue
-    return "No"
-
+def check_ruta_topia():
+    user = getpass.getuser()
+    ruta_topia = f'C:\\Users\\{user}\\Topia.exe'
+    if os.path.exists(ruta_topia):
+        msg = "Sí está instalado"
+        return msg
+    else:
+        msg = "No está instalado"
+        return msg
 def check_ruta_sofos():
     if os.path.exists(ruta_sofos):
         msg = "Sí"

@@ -83,7 +83,7 @@ def procesar_datos():
         mac=check.checkMac(),
         ubicacion=ubicacion,
         host=check.checkHost(),
-        app_install1=check.check_app_instalada("Topia.exe"),
+        app_install1=check.check_ruta_topia(),
         firewall=check.obtener_estado_firewall(),
         app_install2=check.check_ruta_sofos(),
         sistema_op=check.checkOS(),
