@@ -1,3 +1,4 @@
+import os.path
 from datetime import date
 from tkinter import simpledialog
 from screeninfo import get_monitors
@@ -15,6 +16,8 @@ import platform
 
 root = tk.Tk()
 root.withdraw()
+
+ruta_sofos = 'C:\\Program Files\\Sophos'
 
 '''
 def tieneHuellero():
@@ -97,6 +100,15 @@ def check_app_instalada(nombre_app):
         except FileNotFoundError:
             continue
     return "No"
+
+def check_ruta_sofos():
+    if os.path.exists(ruta_sofos):
+        msg = "Sí"
+        return msg
+    else:
+        msg = "No"
+        return msg
+
 def checkYTB():
     try:
         check_ytb = requests.get("https://www.youtube.com", timeout=5)

@@ -88,7 +88,7 @@ def procesar_datos():
         host=check.checkHost(),
         app_install1=check.check_app_instalada("Topia.exe"),
         firewall=check.checkFirewall(),
-        app_install2=check.check_app_instalada("Sophos UI.exe"),
+        app_install2=check.check_ruta_sofos(),
         sistema_op=check.checkOS(),
         tipo_cpu=check.checkTipoEquipo(),
         pantalla=check.checkScreen(),
