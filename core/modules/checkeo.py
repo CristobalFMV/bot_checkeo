@@ -111,6 +111,8 @@ def check_ruta_sofos():
     if os.path.exists(ruta_sofos):
         msg = "Sí"
         return msg
+    else:
+        return "No"
 def checkYTB():
     try:
         check_ytb = requests.get("https://www.youtube.com", timeout=5)
