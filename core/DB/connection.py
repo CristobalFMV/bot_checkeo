@@ -1,6 +1,8 @@
 import sqlite3
-
-'''Conexion de prueba'''
+"""
+MODULO DE CONEXION OBSOLETO, UTILIZABLE PARA TESTEAR EN CASO DE NO TENER INSTALADO SQL SERVER SE PUEDE UTILIZAR PARA
+SQL LITE POR DEFECTO
+"""
 
 def crear_bd():
     conn = sqlite3.connect("equipos_hospital.db")

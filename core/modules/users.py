@@ -1,7 +1,10 @@
 import subprocess
 import pyodbc
-# NO debes importar id_reg directamente
-# Cambia estos valores según tu entorno
+
+
+"""Este modulo se encarga de insertar los usuarios en la base de datos SQL, 
+    aun no está terminado, se dio prioridad a finalizar las funciones principales del bot
+"""
 driver = 'ODBC Driver 17 for SQL Server'
 server = '168.88.162.66'
 database = 'DB_INFORMATICA'

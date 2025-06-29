@@ -1,17 +1,11 @@
 from openpyxl import load_workbook
 from core.modules import checkeo
 from core.config.ruta_excel import archivo_vicarius
+"""Variables de uso global en este archivo"""
 archivo_vicarius = archivo_vicarius
 wb = load_workbook(archivo_vicarius)
 ws = wb.active
 ip_local = checkeo.checkIP()
-'''Parametros para el SQL'''
-'''users,password,anexo,
-                serial,mac,ubicacion,host,
-                app_install1,firewall,app_install2,
-                sistema_op, tipo_cpu,pantalla,huellero,
-                ytb_premium, admin,remoto,
-                observacion,nombre_soporte,fecha'''
 #============================================
 """Objeto equipo que almacenara la información por equipo tomado"""
 class Equipo:
@@ -77,9 +71,4 @@ class Equipo:
             print("❌ Error durante la escritura en Excel:", e)
         else:
             print("✅ Proceso completado con éxito.")
-
-
-
-
-#equipo = Equipo()
-#datos = equipo.__dict__
+            print("✅ Proceso completado con éxito.")

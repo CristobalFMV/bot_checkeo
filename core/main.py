@@ -3,7 +3,7 @@ from core.modules.checkeo import checkIP
 from core.excel.utils import buscar_fila_por_ip
 from core.excel.writeExcel import Equipo
 from core.config.ruta_excel import archivo_vicarius
-
+"""Esta wea no tocar e ignorar"""
 def main():
     try:
         wb = load_workbook(archivo_vicarius)

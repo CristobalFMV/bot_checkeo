@@ -5,7 +5,7 @@ import platform
 import datetime
 import subprocess
 import os
-
+"""Modulo sin uso, se creo para como primer intento para crear almacenamiento de la informacion en la BD"""
 def get_equipo_local():
     ip = socket.gethostbyname(socket.gethostname())
     mac = ':'.join(['{:02x}'.format((uuid.getnode() >> ele) & 0xff)
@@ -15,14 +15,13 @@ def get_equipo_local():
     sistema_op = platform.system() + " " + platform.release()
     fecha = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Datos de ejemplo o falsos si no se pueden obtener
     return {
         "ip": ip,
         "usuario": usuario,
         "anexo": "",
         "serial": obtener_serial(),
         "mac": mac,
-        "ubicacion": "",  # Puedes dejarlo vacío o configurarlo según lógica local
+        "ubicacion": "",
         "host": host,
         "app_install1": "SI" if app_instalada("Topia.exe") else "No",
         "firewall": obtener_estado_firewall(),

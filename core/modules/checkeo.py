@@ -15,21 +15,9 @@ import platform
 
 root = tk.Tk()
 root.withdraw()
-
-'''
-def tieneHuellero():
-    huellero = simpledialog.askstring("HUELLERO", "¿El equipo tiene huellero?")
-    return huellero
-def pedirAnexo():
-    anexo = simpledialog.askstring("ANEXO DEL EQUIPO","Ingrese el Anexo que corresponde a este equipo")
-    return anexo
-def pedirPassword():
-
-    contrasena = simpledialog.askstring("CONTRASEÑA DEL EQUIPO", "Ingrese la contraseña de este equipo")
-    return contrasena
-def pedirUbicacion():
-    ubicacion = simpledialog.askstring("UBICACIÓN", "Ingrese el servicio donde está ubicado el equipo")
-    return ubicacion'''
+"""
+Funciones que extraen informacion del equipo
+"""
 def checkCurrentUser():
     return getpass.getuser()
 def checkIP():

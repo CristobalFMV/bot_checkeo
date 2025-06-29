@@ -7,7 +7,9 @@ from core.modules import checkeo as check
 from core.excel.writeExcel import Equipo
 from core.config.ruta_excel import archivo_vicarius
 from core.excel.utils import buscar_fila_por_ip
-
+"""
+Interfaz Grafica de Usuario
+"""
 # Función para obtener la IP local
 def obtener_ip_local():
     try:

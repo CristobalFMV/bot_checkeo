@@ -1,7 +1,9 @@
 import pyodbc
 from core.modules.users import obtener_usuarios, insertar_usuarios_sql
 from core.DB.consulta_bd import equipo
-# Cambia estos valores según tu entorno
+"""
+Modulo de conexion a la base de datos e inserción de data en tabla.
+"""
 driver = 'ODBC Driver 17 for SQL Server'
 server = '168.88.162.66'
 database = 'DB_INFORMATICA'
@@ -16,6 +18,7 @@ DATABASE={database};
 UID={username};
 PWD={password};
 '''
+"""Esta funcion convierte los valores Si/No de texto a Bool, SQLSERVER lo lee como bit"""
 def convertir_a_bit(valor):
     if isinstance(valor, str):
         return 1 if valor.strip().lower() in ['sí', 'si', 'yes', 'true', '1'] else 0
