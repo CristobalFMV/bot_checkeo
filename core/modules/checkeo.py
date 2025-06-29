@@ -56,6 +56,7 @@ def obtener_estado_firewall():
         ]
         resultado = subprocess.run(comando, capture_output=True, text=True, check=True)
         salida = resultado.stdout.strip().splitlines()
+
         estados = {}
         perfil_actual = None
 

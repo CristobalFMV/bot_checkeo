@@ -1,19 +1,16 @@
-import tkinter as tk
-from customtkinter import *
 import socket
 import sys
-from tkinter import messagebox, ttk
+import customtkinter as ctk
+from tkinter import messagebox
 from openpyxl import load_workbook
 from core.modules import checkeo as check
 from core.excel.writeExcel import Equipo
 from core.config.ruta_excel import archivo_vicarius
 from core.excel.utils import buscar_fila_por_ip
-"""
-Interfaz Grafica de Usuario
 
-comando para compilar el bot: pyinstaller --onefile --noconsole gui.py
-"""
-# Función para obtener la IP local
+ctk.set_appearance_mode("System")
+ctk.set_default_color_theme("blue")
+
 def obtener_ip_local():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -26,54 +23,48 @@ def obtener_ip_local():
 
 def actualizar_ip():
     ip = obtener_ip_local()
-    ip_entry.delete(0, tk.END)
+    ip_entry.delete(0, "end")
     ip_entry.insert(0, ip)
 
-# Ventana principal
-"""
-backup
-root = tk.Tk()
-root.geometry("400x350")
-root.title("Formulario de Auditoría - Robot Inspector")
-"""
-root = tk.Tk()
-root.geometry("400x350")
+def kill():
+    root.destroy()
+    sys.exit()
+
+root = ctk.CTk()
+root.resizable(False,False)
+root.geometry("400x420")
 root.title("Formulario de Auditoría - Robot Inspector")
 
-frame = tk.Frame(root, padx=10, pady=10)
-frame.pack()
+frame = ctk.CTkFrame(master=root, corner_radius=10)
+frame.pack(padx=20, pady=20, fill="both", expand=True)
 
-# Campos de entrada
-tk.Label(frame, text="IP del equipo:").grid(row=0, column=0, sticky="e")
-ip_entry = tk.Entry(frame, width=30)
-ip_entry.grid(row=0, column=1)
+# Widgets con customtkinter
+ctk.CTkLabel(frame, text="IP del equipo:").grid(row=0, column=0, sticky="w", pady=5, padx=5)
+ip_entry = ctk.CTkEntry(frame, width=200)
+ip_entry.grid(row=0, column=1, pady=5)
 ip_entry.insert(0, obtener_ip_local())
 
-tk.Label(frame, text="Anexo:").grid(row=2, column=0, sticky="e")
-anexo_entry = tk.Entry(frame, width=30)
-anexo_entry.grid(row=2, column=1)
+ctk.CTkLabel(frame, text="Anexo:").grid(row=1, column=0, sticky="w", pady=5, padx=5)
+anexo_entry = ctk.CTkEntry(frame, width=200)
+anexo_entry.grid(row=1, column=1, pady=5)
 
-tk.Label(frame, text="Ubicación:").grid(row=3, column=0, sticky="e")
-ubicacion_entry = tk.Entry(frame, width=30)
-ubicacion_entry.grid(row=3, column=1)
+ctk.CTkLabel(frame, text="Ubicación:").grid(row=2, column=0, sticky="w", pady=5, padx=5)
+ubicacion_entry = ctk.CTkEntry(frame, width=200)
+ubicacion_entry.grid(row=2, column=1, pady=5)
 
-tk.Label(frame, text="¿Tiene huellero?").grid(row=4, column=0, sticky="e")
-huellero_var = tk.StringVar()
-huellero_combo = ttk.Combobox(frame, width=27, textvariable=huellero_var, state="readonly")
-huellero_combo['values'] = ("Sí", "No")
-huellero_combo.grid(row=4, column=1)
-huellero_combo.current(0)
+ctk.CTkLabel(frame, text="¿Tiene huellero?").grid(row=3, column=0, sticky="w", pady=5, padx=5)
+huellero_combo = ctk.CTkComboBox(frame, values=["Sí", "No"], width=200)
+huellero_combo.grid(row=3, column=1, pady=5)
+huellero_combo.set("Sí")
 
-tk.Label(frame, text="Soporte técnico:").grid(row=5, column=0, sticky="e")
-soporte_entry = tk.Entry(frame, width=30)
-soporte_entry.grid(row=5, column=1)
+ctk.CTkLabel(frame, text="Soporte técnico:").grid(row=4, column=0, sticky="w", pady=5, padx=5)
+soporte_entry = ctk.CTkEntry(frame, width=200)
+soporte_entry.grid(row=4, column=1, pady=5)
 
-tk.Label(frame, text="Observaciones:").grid(row=6, column=0, sticky="e")
-observacion_entry = tk.Entry(frame, width=30)
-observacion_entry.grid(row=6, column=1)
+ctk.CTkLabel(frame, text="Observaciones:").grid(row=5, column=0, sticky="w", pady=5, padx=5)
+observacion_entry = ctk.CTkEntry(frame, width=200)
+observacion_entry.grid(row=5, column=1, pady=5)
 
-
-# Función para procesar y guardar
 def procesar_datos():
     ip = ip_entry.get().strip()
     anexo = anexo_entry.get().strip()
@@ -85,6 +76,7 @@ def procesar_datos():
     if not ip or not anexo or not ubicacion or not soporte:
         messagebox.showwarning("Campos vacíos", "Completa todos los campos requeridos.")
         return
+
     root.update_idletasks()
     equipo = Equipo(
         ip=ip,
@@ -131,8 +123,8 @@ def procesar_datos():
         root.update_idletasks()
 
 # Botones
-#tk.Button(frame, text="Actualizar IP", command=actualizar_ip).grid(row=7, column=0, pady=10)
-#tk.Button(frame, text="Procesar", command=procesar_datos).grid(row=7, column=1, pady=10)
-#tk.Button(frame, text="Salir", command=lambda: (root.destroy(), sys.exit())).grid(row=9, column=0, columnspan=2, pady=5)
+ctk.CTkButton(frame, text="Actualizar IP", command=actualizar_ip).grid(row=6, column=0, pady=10, padx=9)
+ctk.CTkButton(frame, text="Procesar", command=procesar_datos).grid(row=6, column=1, pady=10, padx=9)
+ctk.CTkButton(frame, text="Salir", command=kill).grid(row=7, column=0, columnspan=2, pady=10)
 
 root.mainloop()
