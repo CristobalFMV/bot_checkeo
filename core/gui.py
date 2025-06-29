@@ -9,6 +9,8 @@ from core.config.ruta_excel import archivo_vicarius
 from core.excel.utils import buscar_fila_por_ip
 """
 Interfaz Grafica de Usuario
+
+comando para compilar el bot: pyinstaller --onefile --noconsole gui.py
 """
 # Función para obtener la IP local
 def obtener_ip_local():
@@ -81,7 +83,7 @@ def procesar_datos():
         ip=ip,
         usuario=check.checkCurrentUser(),
         anexo=anexo,
-        serial=check.check_serial(),
+        serial=check.checkSerial(),
         mac=check.checkMac(),
         ubicacion=ubicacion,
         host=check.checkHost(),
