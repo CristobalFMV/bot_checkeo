@@ -12,12 +12,24 @@ import winreg
 import win32com.client
 import uuid
 import platform
-"""
-Funciones que extraen informacion del equipo de acuerdo a requisitos de planilla VICARIUS RANGO IP
-"""
+
 root = tk.Tk()
 root.withdraw()
 
+'''
+def tieneHuellero():
+    huellero = simpledialog.askstring("HUELLERO", "¿El equipo tiene huellero?")
+    return huellero
+def pedirAnexo():
+    anexo = simpledialog.askstring("ANEXO DEL EQUIPO","Ingrese el Anexo que corresponde a este equipo")
+    return anexo
+def pedirPassword():
+
+    contrasena = simpledialog.askstring("CONTRASEÑA DEL EQUIPO", "Ingrese la contraseña de este equipo")
+    return contrasena
+def pedirUbicacion():
+    ubicacion = simpledialog.askstring("UBICACIÓN", "Ingrese el servicio donde está ubicado el equipo")
+    return ubicacion'''
 def checkCurrentUser():
     return getpass.getuser()
 def checkIP():
@@ -43,26 +55,13 @@ def checkRDP():
         return "SÍ" if value == 0 else "NO"
     except Exception as e:
         return f"Error leyendo RDP: {e}"
-
 def checkFirewall():
     try:
-        w = wmi.WMI(namespace="root\\StandardCimv2")
-        perfiles = {
-            1: "Dominio",
-            2: "Privado",
-            3: "Público"
-        }
-        resultados = []
-
-        for perfil in w.MSFT_NetFirewallProfile():
-            nombre = perfiles.get(perfil.Name, f"Desconocido ({perfil.Name})")
-            estado = "Activo" if perfil.Enabled else "Inactivo"
-            resultados.append(f"{nombre}: {estado}")
-
-        return resultados
+        fwMgr = win32com.client.Dispatch("HNetCfg.FwMgr")
+        policy = fwMgr.LocalPolicy.CurrentProfile
+        return "1" if policy.FirewallEnabled else "2"
     except Exception as e:
-        return [f"Error al verificar firewall: {e}"]
-
+        return f"Error leyendo firewall: {e}"
 
 def checkMac():
     mac = uuid.getnode()

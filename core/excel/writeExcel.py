@@ -1,5 +1,5 @@
 from openpyxl import load_workbook
-from core.gui import checkeo
+from core.modules import checkeo
 from core.config.ruta_excel import archivo_vicarius
 archivo_vicarius = archivo_vicarius
 wb = load_workbook(archivo_vicarius)

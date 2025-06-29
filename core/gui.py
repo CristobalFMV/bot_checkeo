@@ -3,7 +3,7 @@ import socket
 import sys
 from tkinter import messagebox, ttk
 from openpyxl import load_workbook
-from core.gui import checkeo as check
+from core.modules import checkeo as check
 from core.excel.writeExcel import Equipo
 from core.config.ruta_excel import archivo_vicarius
 from core.excel.utils import buscar_fila_por_ip
@@ -61,8 +61,6 @@ tk.Label(frame, text="Observaciones:").grid(row=6, column=0, sticky="e")
 observacion_entry = tk.Entry(frame, width=30)
 observacion_entry.grid(row=6, column=1)
 
-progress = ttk.Progressbar(frame, orient='horizontal', length=300, mode='determinate')
-progress.grid(row=10, column=0, columnspan=2, pady=10)
 
 # Función para procesar y guardar
 def procesar_datos():
@@ -76,19 +74,18 @@ def procesar_datos():
     if not ip or not anexo or not ubicacion or not soporte:
         messagebox.showwarning("Campos vacíos", "Completa todos los campos requeridos.")
         return
-    progress.start(10)
     root.update_idletasks()
     equipo = Equipo(
         ip=ip,
         usuario=check.checkCurrentUser(),
         anexo=anexo,
-        serial=check.checkSerial(),
+        serial=check.check_serial(),
         mac=check.checkMac(),
         ubicacion=ubicacion,
         host=check.checkHost(),
-        app_install1=check.check_app_instalada("Topia.exe"),
-        firewall=check.checkFirewall(),
-        app_install2=check.check_app_instalada("Sophos UI.exe"),
+        app_install1=check.check_ruta_topia(),
+        firewall=check.obtener_estado_firewall(),
+        app_install2=check.check_ruta_sofos(),
         sistema_op=check.checkOS(),
         tipo_cpu=check.checkTipoEquipo(),
         pantalla=check.checkScreen(),
@@ -120,8 +117,6 @@ def procesar_datos():
     except Exception as e:
         messagebox.showerror("Error", f"Ocurrió un error al guardar: {e}")
     finally:
-        progress.stop()
-        progress['value'] = 100
         root.update_idletasks()
 
 # Botones
