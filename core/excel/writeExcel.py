@@ -62,30 +62,24 @@ class Equipo:
         self.fecha = fecha
 
     def escribir_en_excel(self, ws, fila):
+        columnas = ["C", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V"]
+        data_equipo = [
+            self.users, self.anexo, self.serial, self.mac, self.ubicacion, self.host,
+            self.app_install1, self.firewall, self.app_install2, self.sistema_op,
+            self.tipo_cpu, self.pantalla, self.huellero, self.ytb_premium, self.admin,
+            self.remoto, self.observacion, self.nombre_soporte, self.fecha
+        ]
         try:
-            ws[f"C{fila}"] = self.users
-            ws[f"E{fila}"] = self.anexo
-            ws[f"F{fila}"] = self.serial
-            ws[f"G{fila}"] = self.mac
-            ws[f"H{fila}"] = self.ubicacion
-            ws[f"I{fila}"] = self.host
-            ws[f"J{fila}"] = self.app_install1
-            ws[f"K{fila}"] = self.firewall
-            ws[f"L{fila}"] = self.app_install2
-            ws[f"M{fila}"] = self.sistema_op
-            ws[f"N{fila}"] = self.tipo_cpu
-            ws[f"O{fila}"] = self.pantalla
-            ws[f"P{fila}"] = self.huellero
-            ws[f"Q{fila}"] = self.ytb_premium
-            ws[f"R{fila}"] = self.admin
-            ws[f"S{fila}"] = self.remoto
-            ws[f"T{fila}"] = self.observacion
-            ws[f"U{fila}"] = self.nombre_soporte
-            ws[f"V{fila}"] = self.fecha
+            for letra, data in zip(columnas, data_equipo):
+                ws[f"{letra}{fila}"] = data
         except Exception as e:
+            print(f"Error escribiendo en Excel: {e}")
             print("❌ Error durante la escritura en Excel:", e)
         else:
             print("✅ Proceso completado con éxito.")
+
+
+
 
 #equipo = Equipo()
 #datos = equipo.__dict__
